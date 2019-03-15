@@ -62,9 +62,8 @@ namespace DongMing_Hu_CPRG200_Lab4
 
         private void frmOrders_FormClosing(object sender, FormClosingEventArgs e)
         {
-            orderDetailsBindingSource.DataSource = null;
-            orderBindingSource.DataSource = null;
-            this.Close();
+            orderIDComboBox.AutoCompleteMode = AutoCompleteMode.None;
+            //this.Close();
         }
     }
 }
