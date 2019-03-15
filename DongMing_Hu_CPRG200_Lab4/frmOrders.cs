@@ -27,24 +27,44 @@ namespace DongMing_Hu_CPRG200_Lab4
             orderBindingSource.DataSource = orders;
         }
 
+        // Current Order Changed: filter corresponding order details, bind to DataGridView, calculate total for current order
         private void orderBindingSource_CurrentChanged(object sender, EventArgs e)
         {
-            Console.WriteLine(orderIDComboBox.Text);
-
-            // todo: filter right order details, show in orderDetailsDataGridView
-            var currentDetails = from od in orderDetails
-                                 where od.OrderID == Convert.ToInt32(orderIDComboBox.SelectedItem.ToString())
-                                 orderby od.UnitPrice
-                                 select od;
-
-            //var currentDetails = new List<OrderDetail>();
-            //foreach (var od in orderDetails)
-            //{
-            //    if (od.OrderID == Convert.ToInt32(orderIDComboBox.Text))
-            //        currentDetails.Add(od);
-            //}
+            var currentOrder = (Order)orderBindingSource.Current;
+            var currentDetails = new List<OrderDetail>();
+            decimal currentOrderTotal = 0;
+            foreach (var od in orderDetails)
+            {
+                if (od.OrderID == currentOrder.OrderID)
+                {
+                    // if OrderID matches the current order, add to new list
+                    currentDetails.Add(od);
+                    // do calculation
+                    currentOrderTotal += od.UnitPrice * (1 - od.Discount) * od.Quantity;
+                }
+            }
 
             orderDetailsBindingSource.DataSource = currentDetails;
+            txtOrderTotal.Text = currentOrderTotal.ToString("c");
+        }
+
+        // Save Button Clicked: save changes to database
+        private void orderBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            //OrderDB.UpdateDatabase
+        }
+
+        // testing code -----------------------------------
+        private void shippedDateDateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine(shippedDateDateTimePicker.Value);
+        }
+
+        private void frmOrders_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            orderDetailsBindingSource.DataSource = null;
+            orderBindingSource.DataSource = null;
+            this.Close();
         }
     }
 }
