@@ -46,24 +46,39 @@ namespace DongMing_Hu_CPRG200_Lab4
 
             orderDetailsBindingSource.DataSource = currentDetails;
             txtOrderTotal.Text = currentOrderTotal.ToString("c");
+
+            // set null date to " "
+            shippedDateDateTimePicker.CustomFormat = currentOrder.ShippedDate == null ? " " : "MMM-dd-yyyy";
+        }
+
+        // User Picked a Date: 
+        private void shippedDateDateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            shippedDateDateTimePicker.CustomFormat = "MMM-dd-yyyy";
+
+            var currentOrder = (Order)orderBindingSource.Current;
+            currentOrder.ShippedDate = shippedDateDateTimePicker.Value;
         }
 
         // Save Button Clicked: save changes to database
         private void orderBindingNavigatorSaveItem_Click(object sender, EventArgs e)
         {
+            // todo: validate if date after orderdate && before required date
             //OrderDB.UpdateDatabase
+            var currentOrder = (Order)orderBindingSource.Current;
+            var listToUpdate = new List<Order>();
+            listToUpdate.Add(currentOrder);
+            MessageBox.Show(OrderDB.UpdateShipDate(listToUpdate).ToString() + " orders are updated.") ;
         }
 
-        // testing code -----------------------------------
-        private void shippedDateDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            Console.WriteLine(shippedDateDateTimePicker.Value);
-        }
-
+        // Before Close Form: unset autocomplete mode, otherwise got a funny error
         private void frmOrders_FormClosing(object sender, FormClosingEventArgs e)
         {
             orderIDComboBox.AutoCompleteMode = AutoCompleteMode.None;
-            //this.Close();
         }
+
+
+        // testing code -----------------------------------
+
     }
 }
