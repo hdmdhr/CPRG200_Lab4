@@ -178,7 +178,7 @@
             // bindingNavigatorCountItem
             // 
             this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
-            this.bindingNavigatorCountItem.Size = new System.Drawing.Size(35, 22);
+            this.bindingNavigatorCountItem.Size = new System.Drawing.Size(39, 22);
             this.bindingNavigatorCountItem.Text = "of {0}";
             this.bindingNavigatorCountItem.ToolTipText = "Total number of items";
             // 
@@ -254,6 +254,7 @@
             // orderBindingNavigatorSaveItem
             // 
             this.orderBindingNavigatorSaveItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.orderBindingNavigatorSaveItem.Enabled = false;
             this.orderBindingNavigatorSaveItem.Image = ((System.Drawing.Image)(resources.GetObject("orderBindingNavigatorSaveItem.Image")));
             this.orderBindingNavigatorSaveItem.Name = "orderBindingNavigatorSaveItem";
             this.orderBindingNavigatorSaveItem.Size = new System.Drawing.Size(23, 22);
@@ -293,6 +294,7 @@
             this.shippedDateDateTimePicker.Name = "shippedDateDateTimePicker";
             this.shippedDateDateTimePicker.Size = new System.Drawing.Size(153, 27);
             this.shippedDateDateTimePicker.TabIndex = 10;
+            this.shippedDateDateTimePicker.CloseUp += new System.EventHandler(this.shippedDateDateTimePicker_CloseUp);
             this.shippedDateDateTimePicker.ValueChanged += new System.EventHandler(this.shippedDateDateTimePicker_ValueChanged);
             // 
             // orderDateTextBox

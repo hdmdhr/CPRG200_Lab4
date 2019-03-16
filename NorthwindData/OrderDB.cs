@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace NorthwindData
 {
@@ -30,9 +31,10 @@ namespace NorthwindData
                 var o = new Order();
                 o.OrderID = (int)dr["OrderID"];
                 o.CustomerID = dr["CustomerID"] == DBNull.Value ? "" : dr["CustomerID"].ToString();
-                o.OrderDate = dr["OrderDate"]==DBNull.Value ? null : (DateTime?)dr["OrderDate"];
-                o.RequiredDate = dr["RequiredDate"] == DBNull.Value ? null : (DateTime?)dr["RequiredDate"];
-                o.ShippedDate = dr["ShippedDate"] == DBNull.Value ? null : (DateTime?)dr["ShippedDate"];
+                // if a datetime from database is DBNull, convert it to min DateTime can be picked in datetimepicker
+                o.OrderDate = dr["OrderDate"]==DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["OrderDate"];
+                o.RequiredDate = dr["RequiredDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["RequiredDate"];
+                o.ShippedDate = dr["ShippedDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["ShippedDate"];
 
                 orders.Add(o);
             }
@@ -43,22 +45,22 @@ namespace NorthwindData
         }
 
         /// <summary>
-        /// Update multiple records' ShippedDate column
+        /// Update multiple records' ShippedDate column.
         /// </summary>
         /// <param name="ordersToUpdate"></param>
-        /// <returns>Row affected</returns>
-        public static int UpdateShipDate(List<Order> ordersToUpdate)
+        /// <returns>A list of int that indicates orderID failed updating.</returns>
+        public static List<int> UpdateOrders(List<Order> ordersToUpdate)
         {
-            int rowsAffected = 0;
+            List<int> idOfFailedUpdates = new List<int>();
             string updateSQL = "UPDATE Orders " +
                                "SET ShippedDate=@NewShipDate " +
                                "WHERE OrderID=@OldOrderID " +  // identity record
                                "AND CustomerID=@OldCustomerID " +  // rest: optimistic concurrency
                                "AND OrderDate=@OldOrderDate " +
                                "AND RequiredDate=@OldRequiredDate";
-            SqlCommand updateCmd = new SqlCommand(updateSQL, connection);
             foreach (var order in ordersToUpdate)
             {
+                SqlCommand updateCmd = new SqlCommand(updateSQL, connection);
                 // bind parameters
                 updateCmd.Parameters.AddWithValue("@NewShipDate", order.ShippedDate);
                 updateCmd.Parameters.AddWithValue("@OldOrderID", order.OrderID);
@@ -69,21 +71,22 @@ namespace NorthwindData
                 try
                 {
                     connection.Open();
-                    rowsAffected += updateCmd.ExecuteNonQuery();
+                    var rowsAffected = updateCmd.ExecuteNonQuery();
+                    // if update failed, collect failed OrderID to return to user
+                    if (rowsAffected == 0)
+                        idOfFailedUpdates.Add(order.OrderID);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw e;
+                    throw ex;
                 }
                 finally
                 {
                     connection.Close();
                 }
-
             }
 
-
-            return rowsAffected;
+            return idOfFailedUpdates;
         }
     }
 }
