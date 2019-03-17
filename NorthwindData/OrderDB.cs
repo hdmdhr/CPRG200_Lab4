@@ -24,34 +24,40 @@ namespace NorthwindData
             var sqlText = "SELECT OrderID,CustomerID,OrderDate,RequiredDate,ShippedDate FROM Orders";
             SqlCommand selectCmd = new SqlCommand(sqlText, connection);
             // execute
-            connection.Open();
-            SqlDataReader dr = selectCmd.ExecuteReader(CommandBehavior.CloseConnection);
-            while (dr.Read())
+            try
             {
-                var o = new Order();
-                o.OrderID = (int)dr["OrderID"];
-                o.CustomerID = dr["CustomerID"] == DBNull.Value ? "" : dr["CustomerID"].ToString();
-                // if a datetime from database is DBNull, convert it to min DateTime can be picked in datetimepicker
-                o.OrderDate = dr["OrderDate"]==DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["OrderDate"];
-                o.RequiredDate = dr["RequiredDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["RequiredDate"];
-                o.ShippedDate = dr["ShippedDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["ShippedDate"];
+                connection.Open();
+                SqlDataReader dr = selectCmd.ExecuteReader(CommandBehavior.CloseConnection);
+                while (dr.Read())
+                {
+                    var o = new Order();
+                    o.OrderID = (int)dr["OrderID"];
+                    o.CustomerID = dr["CustomerID"] == DBNull.Value ? "" : dr["CustomerID"].ToString();
+                    // if a datetime from database is DBNull, convert it to min DateTime can be picked in datetimepicker
+                    o.OrderDate = dr["OrderDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["OrderDate"];
+                    o.RequiredDate = dr["RequiredDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["RequiredDate"];
+                    o.ShippedDate = dr["ShippedDate"] == DBNull.Value ? DateTimePicker.MinimumDateTime : (DateTime)dr["ShippedDate"];
 
-                orders.Add(o);
+                    orders.Add(o);
+                }
+                dr.Close();
+
+                return orders;
             }
-            dr.Close();
-
-
-            return orders;
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
         /// Update multiple records' ShippedDate column.
         /// </summary>
-        /// <param name="ordersToUpdate"></param>
+        /// <param name="ordersToUpdate">A list of orders to update</param>
         /// <returns>A list of int that indicates orderID failed updating.</returns>
         public static List<int> UpdateOrders(List<Order> ordersToUpdate)
         {
-            List<int> idOfFailedUpdates = new List<int>();
+            List<int> idsOfFailedUpdates = new List<int>();
             string updateSQL = "UPDATE Orders " +
                                "SET ShippedDate=@NewShipDate " +
                                "WHERE OrderID=@OldOrderID " +  // identity record
@@ -74,9 +80,9 @@ namespace NorthwindData
                     var rowsAffected = updateCmd.ExecuteNonQuery();
                     // if update failed, collect failed OrderID to return to user
                     if (rowsAffected == 0)
-                        idOfFailedUpdates.Add(order.OrderID);
+                        idsOfFailedUpdates.Add(order.OrderID);
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
                     throw ex;
                 }
@@ -86,7 +92,7 @@ namespace NorthwindData
                 }
             }
 
-            return idOfFailedUpdates;
+            return idsOfFailedUpdates;
         }
     }
 }

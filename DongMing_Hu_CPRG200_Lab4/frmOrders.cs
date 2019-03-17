@@ -19,7 +19,7 @@ namespace DongMing_Hu_CPRG200_Lab4
         private List<Order> listToUpdate = new List<Order>();
         private Order currentOrder = null;
 
-        private const string shipDateFormat = "MMM-d-yyyy";
+        private const string shipDateFormat = "yyyy-MMM-d";
 
         public frmOrders()
         {
@@ -55,6 +55,8 @@ namespace DongMing_Hu_CPRG200_Lab4
             orderDetailsBindingSource.DataSource = currentOrderDetails;
             // output current order's total
             txtOrderTotal.Text = currentOrderTotal.ToString("c");
+            // TODO: if current order is in update list, give some visual sign to indicate the shipping date has been chaged
+
         }
 
         // Picker Value Changed: doesn't necessarily mean it's user's pick, can be programmatic changes
@@ -62,9 +64,98 @@ namespace DongMing_Hu_CPRG200_Lab4
         {
         }
 
-        // Datepicker Dropped Down and Closed Up: make sure user picked a different and valid date, 
+        // Datepicker Dropped Down and Closed Up: make sure user picked a different and valid date, add it to update list
         private void shippedDateDateTimePicker_CloseUp(object sender, EventArgs e)
         {
+            ChangeShippingDate();
+        }
+
+        
+
+
+        // Save Button Clicked: save changes to database, give user feedback
+        private void orderBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            TryUpdate();
+        }
+
+
+        // Before Close Form: unset autocomplete mode (which I set in property panel), otherwise get an error
+        private void frmOrders_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            orderIDComboBox.AutoCompleteMode = AutoCompleteMode.None;
+        }
+
+
+
+
+        // ----------------- Methods ------------------
+
+        // Do Updates Against Database
+        private void TryUpdate()
+        {
+            // 1.   pass listToUpdate to OrderDB update method
+            // 2.1  if thrown, show exception message
+            // 2.2  if no exception, return a List<int> (collection of update failed OrderIDs)
+            // 3.   show user how many updates succeed, how many failed, and OrderID of failed ones
+            // 4.1  if all updates succeed, clear listToUpdate, disable save btn (only enabled when there are unupdated changes)
+            // 4.2  if there are failed updates, add failed orders to listToUpdate again, reload orders table
+            var failedOrderIDs = new List<int>();
+            try
+            {
+                // try to update changes
+                failedOrderIDs = OrderDB.UpdateOrders(listToUpdate);
+
+                // create error message shows which orders failed update
+                string failMsg = "Order ID: ";
+                foreach (var fail in failedOrderIDs)
+                    failMsg += fail + ", ";
+                failMsg += "did not update due to concurrency issue, please try again later.";
+
+                // use messagebox to give user feedback
+                int howManySucceed = listToUpdate.Count - failedOrderIDs.Count;
+                MessageBox.Show((howManySucceed == 0 ? "" : howManySucceed.ToString() + " orders were updated.\n") +
+                                (failedOrderIDs.Count == 0 ? "" : failedOrderIDs.Count + " order(s) failed to update. " + failMsg));
+
+                // if there are failed updates, add them to listToUpdate again, fetch newest data from database
+                if (failedOrderIDs.Count > 0)
+                {
+                    var updateFailedOrders = new List<Order>();
+                    foreach (var failedOrderID in failedOrderIDs)
+                    {
+                        foreach (var order in listToUpdate)
+                        {
+                            if (order.OrderID == failedOrderID)
+                                updateFailedOrders.Add(order);
+                        }
+                    }
+                    listToUpdate = updateFailedOrders;
+                    // fetch newest data, bind to orders
+                    orders = OrderDB.GetOrders();
+                    orderBindingSource.DataSource = orders;
+                }
+                else  // if all updated successfully, clear update list, disable save
+                {
+                    listToUpdate.Clear();
+                    orderBindingNavigatorSaveItem.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Updates failed due to " + ex.Message, ex.GetType().ToString());
+            }
+        }
+
+        // Change Shipping Date In The Form
+        private void ChangeShippingDate()
+        {
+            // 1.   make sure user picked date is different & valid
+            // 2.1  if not valid, show warning message, restore old shipping date
+            // 2.11 if old shipping date in database was DBNull, set shipping date equal to order date
+            // 2.12 if old shipping date not DBNull, use old shipping date
+            // 2.2  if picked date is valid, save it to current displaying order object
+            // 3    add current order to update list (if not in list yet)
+
             currentOrder = (Order)orderBindingSource.Current;
 
             // check if picked date is different from before (crazy user may just open and close datepicker for fun)
@@ -81,7 +172,7 @@ namespace DongMing_Hu_CPRG200_Lab4
                 else
                 {
                     // valid new date, unset the " " custom format, so date can show in picker
-                    shippedDateDateTimePicker.CustomFormat = shipDateFormat;  
+                    shippedDateDateTimePicker.CustomFormat = shipDateFormat;
                     // set current order's date to picked value
                     currentOrder.ShippedDate = shippedDateDateTimePicker.Value;
 
@@ -91,55 +182,10 @@ namespace DongMing_Hu_CPRG200_Lab4
                         listToUpdate.Add(currentOrder);
                         orderBindingNavigatorSaveItem.Enabled = true;
                         // TEST
-                        //Console.WriteLine(listToUpdate.Count + " items in the update list. Last item's OrderID is: " + listToUpdate.Last<Order>().OrderID + " (" + listToUpdate.Last<Order>().ShippedDate.ToShortDateString() + ")");
+                        Console.WriteLine(listToUpdate.Count + " items in the update list. Last item's OrderID is: " + listToUpdate.Last<Order>().OrderID + " (" + listToUpdate.Last<Order>().ShippedDate.ToShortDateString() + ")");
                     }
                 }
             }
-
         }
-
-
-        // Save Button Clicked: save changes to database
-        private void orderBindingNavigatorSaveItem_Click(object sender, EventArgs e)
-        {
-            // send update list to OrderDB, get back result in List<int> format (collection of OrderIDs)
-            var failedOrderIDs = new List<int>();
-            try
-            {
-                failedOrderIDs = OrderDB.UpdateOrders(listToUpdate);
-
-                MessageBox.Show(listToUpdate.Count - failedOrderIDs.Count + " orders were successfully updated. " + (failedOrderIDs.Count == 0 ? "" : failedOrderIDs.Count+" order(s) failed."));
-
-                // if all updated successfully, clear update list, disable save
-                if (failedOrderIDs.Count == 0)
-                {
-                    listToUpdate.Clear();
-                    orderBindingNavigatorSaveItem.Enabled = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                // create error message shows which orders failed update
-                string failMsg = "Order ID: ";
-                foreach (var fail in failedOrderIDs)
-                    failMsg += fail + ", ";
-                failMsg += "did not update, please try again later.";
-
-                MessageBox.Show("Updates failed due to " + ex.Message + (failedOrderIDs.Count == 0 ? "" : failMsg), 
-                    ex.GetType().ToString());
-            }
-
-        }
-
-        // Before Close Form: unset autocomplete mode, otherwise got a funny error
-        private void frmOrders_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            orderIDComboBox.AutoCompleteMode = AutoCompleteMode.None;
-        }
-
-
-
-        // testing code -----------------------------------
-
     }
 }
