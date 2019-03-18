@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace NorthwindData
 {
+    /*
+     * Author: DongMing Hu
+     * Date Created: 3/15/2019
+     * Purpose: Business class, properties match the columns of Order Detail table from database.
+     * 
+     */
+
     public class OrderDetail
     {
         public int OrderID { get; set; }

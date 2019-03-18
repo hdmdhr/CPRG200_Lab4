@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace NorthwindData
 {
+    /*
+     * Author: DongMing Hu
+     * Date Created: 3/15/2019
+     * Purpose: Data access class, use connection string to build connection and return it.
+     * 
+     */
+
     public static class NorthwindDB
     {
         public static SqlConnection getConnection()

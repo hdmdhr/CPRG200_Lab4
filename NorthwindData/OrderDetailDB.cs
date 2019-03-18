@@ -8,6 +8,13 @@ using System.Threading.Tasks;
 
 namespace NorthwindData
 {
+    /*
+     * Author: DongMing Hu
+     * Date Created: 3/15/2019
+     * Purpose: Data access class, contains one method which get all orders details from database.
+     * 
+     */
+
     public static class OrderDetailDB
     {
         public static List<OrderDetail> GetOrderDetails()

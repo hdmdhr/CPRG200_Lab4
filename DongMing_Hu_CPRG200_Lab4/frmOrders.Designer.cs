@@ -36,6 +36,7 @@
             System.Windows.Forms.Label shippedDateLabel;
             System.Windows.Forms.Label label1;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmOrders));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.orderBindingNavigator = new System.Windows.Forms.BindingNavigator(this.components);
             this.bindingNavigatorAddNewItem = new System.Windows.Forms.ToolStripButton();
             this.orderBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -57,12 +58,13 @@
             this.requiredDateTextBox = new System.Windows.Forms.TextBox();
             this.orderDetailsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.orderDetailsDataGridView = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtOrderTotal = new System.Windows.Forms.TextBox();
+            this.grpDateChangeVisualIndicator = new DongMing_Hu_CPRG200_Lab4.MyGroupBox();
+            this.lblDateChangeTextIndicator = new System.Windows.Forms.Label();
             orderIDLabel = new System.Windows.Forms.Label();
             customerIDLabel = new System.Windows.Forms.Label();
             orderDateLabel = new System.Windows.Forms.Label();
@@ -124,7 +126,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(609, 358);
+            label1.Location = new System.Drawing.Point(559, 351);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(100, 21);
             label1.TabIndex = 9;
@@ -156,7 +158,7 @@
             this.orderBindingNavigator.MovePreviousItem = this.bindingNavigatorMovePreviousItem;
             this.orderBindingNavigator.Name = "orderBindingNavigator";
             this.orderBindingNavigator.PositionItem = this.bindingNavigatorPositionItem;
-            this.orderBindingNavigator.Size = new System.Drawing.Size(827, 25);
+            this.orderBindingNavigator.Size = new System.Drawing.Size(775, 25);
             this.orderBindingNavigator.TabIndex = 0;
             this.orderBindingNavigator.Text = "bindingNavigator1";
             // 
@@ -178,13 +180,14 @@
             // bindingNavigatorCountItem
             // 
             this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
-            this.bindingNavigatorCountItem.Size = new System.Drawing.Size(39, 22);
+            this.bindingNavigatorCountItem.Size = new System.Drawing.Size(35, 22);
             this.bindingNavigatorCountItem.Text = "of {0}";
             this.bindingNavigatorCountItem.ToolTipText = "Total number of items";
             // 
             // bindingNavigatorDeleteItem
             // 
             this.bindingNavigatorDeleteItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.bindingNavigatorDeleteItem.Enabled = false;
             this.bindingNavigatorDeleteItem.Image = ((System.Drawing.Image)(resources.GetObject("bindingNavigatorDeleteItem.Image")));
             this.bindingNavigatorDeleteItem.Name = "bindingNavigatorDeleteItem";
             this.bindingNavigatorDeleteItem.RightToLeftAutoMirrorImage = true;
@@ -286,16 +289,17 @@
             // 
             // shippedDateDateTimePicker
             // 
-            this.shippedDateDateTimePicker.CustomFormat = "MMM-dd-yyyy";
+            this.shippedDateDateTimePicker.CustomFormat = "yyyy-MMM-d";
             this.shippedDateDateTimePicker.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.orderBindingSource, "ShippedDate", true));
             this.shippedDateDateTimePicker.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.shippedDateDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.shippedDateDateTimePicker.Location = new System.Drawing.Point(154, 315);
+            this.shippedDateDateTimePicker.MaxDate = new System.DateTime(2099, 12, 31, 0, 0, 0, 0);
+            this.shippedDateDateTimePicker.MinDate = new System.DateTime(1996, 1, 1, 0, 0, 0, 0);
             this.shippedDateDateTimePicker.Name = "shippedDateDateTimePicker";
             this.shippedDateDateTimePicker.Size = new System.Drawing.Size(153, 27);
             this.shippedDateDateTimePicker.TabIndex = 10;
             this.shippedDateDateTimePicker.CloseUp += new System.EventHandler(this.shippedDateDateTimePicker_CloseUp);
-            this.shippedDateDateTimePicker.ValueChanged += new System.EventHandler(this.shippedDateDateTimePicker_ValueChanged);
             // 
             // orderDateTextBox
             // 
@@ -322,70 +326,112 @@
             // 
             // orderDetailsDataGridView
             // 
+            this.orderDetailsDataGridView.AllowUserToAddRows = false;
+            this.orderDetailsDataGridView.AllowUserToDeleteRows = false;
+            this.orderDetailsDataGridView.AllowUserToOrderColumns = true;
             this.orderDetailsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.orderDetailsDataGridView.AutoGenerateColumns = false;
             this.orderDetailsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.orderDetailsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.orderDetailsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn4,
             this.dataGridViewTextBoxColumn5});
             this.orderDetailsDataGridView.DataSource = this.orderDetailsBindingSource;
             this.orderDetailsDataGridView.Location = new System.Drawing.Point(313, 34);
+            this.orderDetailsDataGridView.MultiSelect = false;
             this.orderDetailsDataGridView.Name = "orderDetailsDataGridView";
-            this.orderDetailsDataGridView.Size = new System.Drawing.Size(502, 308);
+            this.orderDetailsDataGridView.ReadOnly = true;
+            this.orderDetailsDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.orderDetailsDataGridView.Size = new System.Drawing.Size(450, 308);
             this.orderDetailsDataGridView.TabIndex = 13;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "OrderID";
-            this.dataGridViewTextBoxColumn1.HeaderText = "OrderID";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.Width = 95;
             // 
             // dataGridViewTextBoxColumn2
             // 
             this.dataGridViewTextBoxColumn2.DataPropertyName = "ProductID";
+            this.dataGridViewTextBoxColumn2.FillWeight = 179.4367F;
             this.dataGridViewTextBoxColumn2.HeaderText = "ProductID";
+            this.dataGridViewTextBoxColumn2.MinimumWidth = 80;
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
             this.dataGridViewTextBoxColumn2.Width = 108;
             // 
             // dataGridViewTextBoxColumn3
             // 
             this.dataGridViewTextBoxColumn3.DataPropertyName = "UnitPrice";
+            dataGridViewCellStyle2.Format = "C2";
+            dataGridViewCellStyle2.NullValue = null;
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridViewTextBoxColumn3.FillWeight = 39.17254F;
             this.dataGridViewTextBoxColumn3.HeaderText = "UnitPrice";
+            this.dataGridViewTextBoxColumn3.MinimumWidth = 80;
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn4
             // 
             this.dataGridViewTextBoxColumn4.DataPropertyName = "Quantity";
+            this.dataGridViewTextBoxColumn4.FillWeight = 39.17254F;
             this.dataGridViewTextBoxColumn4.HeaderText = "Quantity";
+            this.dataGridViewTextBoxColumn4.MinimumWidth = 75;
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
             this.dataGridViewTextBoxColumn4.Width = 97;
             // 
             // dataGridViewTextBoxColumn5
             // 
             this.dataGridViewTextBoxColumn5.DataPropertyName = "Discount";
+            this.dataGridViewTextBoxColumn5.FillWeight = 39.17254F;
             this.dataGridViewTextBoxColumn5.HeaderText = "Discount";
+            this.dataGridViewTextBoxColumn5.MinimumWidth = 75;
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
             this.dataGridViewTextBoxColumn5.Width = 99;
             // 
             // txtOrderTotal
             // 
+            this.txtOrderTotal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtOrderTotal.Enabled = false;
-            this.txtOrderTotal.Location = new System.Drawing.Point(715, 355);
+            this.txtOrderTotal.Location = new System.Drawing.Point(665, 348);
             this.txtOrderTotal.Name = "txtOrderTotal";
-            this.txtOrderTotal.Size = new System.Drawing.Size(100, 28);
+            this.txtOrderTotal.Size = new System.Drawing.Size(98, 28);
             this.txtOrderTotal.TabIndex = 14;
+            // 
+            // grpDateChangeVisualIndicator
+            // 
+            this.grpDateChangeVisualIndicator.BackColor = System.Drawing.Color.Transparent;
+            this.grpDateChangeVisualIndicator.BorderColor = System.Drawing.Color.Firebrick;
+            this.grpDateChangeVisualIndicator.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grpDateChangeVisualIndicator.ForeColor = System.Drawing.Color.Firebrick;
+            this.grpDateChangeVisualIndicator.Location = new System.Drawing.Point(149, 311);
+            this.grpDateChangeVisualIndicator.Name = "grpDateChangeVisualIndicator";
+            this.grpDateChangeVisualIndicator.Size = new System.Drawing.Size(162, 36);
+            this.grpDateChangeVisualIndicator.TabIndex = 15;
+            this.grpDateChangeVisualIndicator.TabStop = false;
+            this.grpDateChangeVisualIndicator.Visible = false;
+            // 
+            // lblDateChangeTextIndicator
+            // 
+            this.lblDateChangeTextIndicator.AutoSize = true;
+            this.lblDateChangeTextIndicator.BackColor = System.Drawing.Color.Transparent;
+            this.lblDateChangeTextIndicator.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDateChangeTextIndicator.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblDateChangeTextIndicator.Location = new System.Drawing.Point(150, 347);
+            this.lblDateChangeTextIndicator.Name = "lblDateChangeTextIndicator";
+            this.lblDateChangeTextIndicator.Size = new System.Drawing.Size(102, 17);
+            this.lblDateChangeTextIndicator.TabIndex = 16;
+            this.lblDateChangeTextIndicator.Text = "placeholder text";
+            this.lblDateChangeTextIndicator.Visible = false;
             // 
             // frmOrders
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(827, 388);
+            this.ClientSize = new System.Drawing.Size(775, 388);
+            this.Controls.Add(this.lblDateChangeTextIndicator);
             this.Controls.Add(this.txtOrderTotal);
             this.Controls.Add(this.orderDetailsDataGridView);
             this.Controls.Add(this.requiredDateTextBox);
@@ -400,6 +446,7 @@
             this.Controls.Add(orderIDLabel);
             this.Controls.Add(this.orderIDComboBox);
             this.Controls.Add(this.orderBindingNavigator);
+            this.Controls.Add(this.grpDateChangeVisualIndicator);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "frmOrders";
@@ -440,12 +487,13 @@
         private System.Windows.Forms.TextBox requiredDateTextBox;
         private System.Windows.Forms.BindingSource orderDetailsBindingSource;
         private System.Windows.Forms.DataGridView orderDetailsDataGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.TextBox txtOrderTotal;
+        private MyGroupBox grpDateChangeVisualIndicator;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
-        private System.Windows.Forms.TextBox txtOrderTotal;
+        private System.Windows.Forms.Label lblDateChangeTextIndicator;
     }
 }
 

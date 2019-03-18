@@ -9,6 +9,13 @@ using System.Windows.Forms;
 
 namespace NorthwindData
 {
+    /*
+     * Author: DongMing Hu
+     * Date Created: 3/15/2019
+     * Purpose: Data access class, contains two methods. One is to get all orders from database, the other one is to update several modified records at one time.
+     * 
+     */
+
     public static class OrderDB
     {
         static SqlConnection connection = NorthwindDB.getConnection();
@@ -51,7 +58,7 @@ namespace NorthwindData
         }
 
         /// <summary>
-        /// Update multiple records' ShippedDate column.
+        /// Update multiple records' ShippedDate columns.
         /// </summary>
         /// <param name="ordersToUpdate">A list of orders to update</param>
         /// <returns>A list of int that indicates orderID failed updating.</returns>
@@ -64,6 +71,7 @@ namespace NorthwindData
                                "AND CustomerID=@OldCustomerID " +  // rest: optimistic concurrency
                                "AND OrderDate=@OldOrderDate " +
                                "AND RequiredDate=@OldRequiredDate";
+            // todo: to optimize concurrency, it's ideal to also check if other columns have been modified by other users
             foreach (var order in ordersToUpdate)
             {
                 SqlCommand updateCmd = new SqlCommand(updateSQL, connection);
